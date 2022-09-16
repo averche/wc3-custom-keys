@@ -4,7 +4,7 @@
 
 1. Modify `CustomKeys.txt`: change the `Hotkey=?` entries to desired hotkeys
 1. Run `go build && ./wc3-custom-keys CustomKeys.txt CustomKeysGen.txt`
-1. `CustomKeysGen` will now have properly formatted hokeys, tooltips, etc.
+1. `CustomKeysGen.txt` will now have properly formatted hokeys, tooltips, etc.
 
 ## Usage
 
