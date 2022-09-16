@@ -118,6 +118,7 @@ func generate(rules []rule, in io.Reader, out io.Writer) error {
 	}
 
 	// the last group
+	current.hotkey = currentHotkey
 	if err := current.apply(rules); err != nil {
 		return fmt.Errorf("could not apply rules: %w", err)
 	}
