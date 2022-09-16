@@ -11,47 +11,69 @@ import (
 )
 
 func main() {
-	var customKeysPath string
+	var err error
 
 	switch len(os.Args) {
 	case 1:
-		customKeysPath = "CustomKeys.txt"
+		err = run("", "")
 	case 2:
-		customKeysPath = os.Args[1]
+		err = run(os.Args[1], "")
+	case 3:
+		err = run(os.Args[1], os.Args[2])
 	default:
 		log.Fatalf("Usage: %s <path/to/CustomKeys.txt>", os.Args[0])
 	}
 
-	if err := run(customKeysPath); err != nil {
+	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(path string) (errs error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("could not open %q: %w", path, err)
-	}
-	defer func() {
-		if err := f.Close(); err != nil {
-			errs = multierror.Append(errs, fmt.Errorf("could not close %q: %w", path, err))
-		}
-	}()
+func run(pathIn, pathOut string) (errs error) {
+	var (
+		in  = os.Stdin
+		out = os.Stdout
+		err error
+	)
 
-	if err := generate(rules(), f, os.Stdout); err != nil {
+	if pathIn != "" {
+		in, err = os.Open(pathIn)
+		if err != nil {
+			return fmt.Errorf("could not open input %q: %w", pathIn, err)
+		}
+		defer func() {
+			if err := in.Close(); err != nil {
+				errs = multierror.Append(errs, fmt.Errorf("could not close input %q: %w", pathIn, err))
+			}
+		}()
+	}
+
+	if pathOut != "" {
+		out, err = os.Create(pathOut)
+		if err != nil {
+			return fmt.Errorf("could not open output %q: %w", pathOut, err)
+		}
+		defer func() {
+			if err := out.Close(); err != nil {
+				errs = multierror.Append(errs, fmt.Errorf("could not close output %q: %w", pathOut, err))
+			}
+		}()
+	}
+
+	if err := generate(rules(), in, out); err != nil {
 		return fmt.Errorf("generation error: %w", err)
 	}
 
 	return nil
 }
 
-func generate(rules []rule, r io.Reader, w io.Writer) error {
+func generate(rules []rule, in io.Reader, out io.Writer) error {
 	var (
 		current       Group
 		currentHotkey string
 	)
 
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(in)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -67,7 +89,7 @@ func generate(rules []rule, r io.Reader, w io.Writer) error {
 				if err := current.Apply(rules); err != nil {
 					return fmt.Errorf("could not apply rules: %w", err)
 				}
-				current.Print(w)
+				current.Print(out)
 				current = Group{Lines: []string{line}}
 				currentHotkey = ""
 				matched = true
@@ -99,7 +121,7 @@ func generate(rules []rule, r io.Reader, w io.Writer) error {
 	if err := current.Apply(rules); err != nil {
 		return fmt.Errorf("could not apply rules: %w", err)
 	}
-	current.Print(w)
+	current.Print(out)
 
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("could not scan intput: %w", err)
