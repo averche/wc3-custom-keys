@@ -21,7 +21,7 @@ func main() {
 	case 3:
 		err = run(os.Args[1], os.Args[2])
 	default:
-		log.Fatalf("Usage: %s <path/to/CustomKeys.txt>", os.Args[0])
+		log.Fatalf("Usage: %s <path/to/CustomKeys.txt> <path/to/CustomKeysOutput.txt>", os.Args[0])
 	}
 
 	if err != nil {
@@ -69,7 +69,7 @@ func run(pathIn, pathOut string) (errs error) {
 
 func generate(rules []rule, in io.Reader, out io.Writer) error {
 	var (
-		current       Group
+		current       group
 		currentHotkey string
 	)
 
@@ -85,18 +85,18 @@ func generate(rules []rule, in io.Reader, out io.Writer) error {
 			switch r.matches(line) {
 
 			case matchCommand:
-				current.Hotkey = currentHotkey
-				if err := current.Apply(rules); err != nil {
+				current.hotkey = currentHotkey
+				if err := current.apply(rules); err != nil {
 					return fmt.Errorf("could not apply rules: %w", err)
 				}
-				current.Print(out)
-				current = Group{Lines: []string{line}}
+				current.print(out)
+				current = group{lines: []string{line}}
 				currentHotkey = ""
 				matched = true
 				break innerloop
 
 			case matchHotkey:
-				current.Lines = append(current.Lines, line)
+				current.lines = append(current.lines, line)
 				if r.action == actionHotkey2 && currentHotkey == "" {
 					currentHotkey = r.extract(line)
 				} else if r.action == actionHotkey {
@@ -106,22 +106,24 @@ func generate(rules []rule, in io.Reader, out io.Writer) error {
 				break innerloop
 
 			case matchTrue:
-				current.Lines = append(current.Lines, line)
+				current.lines = append(current.lines, line)
 				matched = true
 				break innerloop
 			}
 		}
 
 		if !matched {
-			current.Lines = append(current.Lines, line)
+			current.lines = append(current.lines, line)
 		}
 	}
 
 	// the last group
-	if err := current.Apply(rules); err != nil {
+	fmt.Println(current.lines)
+	if err := current.apply(rules); err != nil {
 		return fmt.Errorf("could not apply rules: %w", err)
 	}
-	current.Print(out)
+	current.print(out)
+	fmt.Println(current.lines)
 
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("could not scan intput: %w", err)
