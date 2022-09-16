@@ -11,7 +11,7 @@ type group struct {
 	lines  []string
 }
 
-// apply will apply the rules and replace all lines with the group their regex equivalents
+// apply will modify each line in the group by applying the matching rule
 func (g *group) apply(rules []rule) error {
 	for i, line := range g.lines {
 		for _, r := range rules {

@@ -118,12 +118,11 @@ func generate(rules []rule, in io.Reader, out io.Writer) error {
 	}
 
 	// the last group
-	fmt.Println(current.lines)
+	current.hotkey = currentHotkey
 	if err := current.apply(rules); err != nil {
 		return fmt.Errorf("could not apply rules: %w", err)
 	}
 	current.print(out)
-	fmt.Println(current.lines)
 
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("could not scan intput: %w", err)

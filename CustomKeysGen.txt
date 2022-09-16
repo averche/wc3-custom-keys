@@ -2697,7 +2697,7 @@ Researchhotkey=Q
 
 // Volcano
 [ANvc]
-Tip="|cffffcc00V|rolcano"
+Tip=Volcano (|cffffcc00R|r)
 Hotkey=R
-Researchtip="Learn |cffffcc00V|rolcano"
-Researchhotkey=V
+Researchtip=Learn Volcano (|cffffcc00R|r)
+Researchhotkey=R
