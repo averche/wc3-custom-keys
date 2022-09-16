@@ -5,23 +5,23 @@ import (
 	"io"
 )
 
-// Group denotes a single hotkey group within the CustomKeys.txt file
-type Group struct {
-	Hotkey string
-	Lines  []string
+// group denotes a single hotkey group within the CustomKeys.txt file
+type group struct {
+	hotkey string
+	lines  []string
 }
 
-// Apply will apply the rules and replace all lines with the group their regex equivalents
-func (g *Group) Apply(rules []rule) error {
-	for i, line := range g.Lines {
+// apply will apply the rules and replace all lines with the group their regex equivalents
+func (g *group) apply(rules []rule) error {
+	for i, line := range g.lines {
 		for _, r := range rules {
 			match := r.matches(line)
 			if match == matchCommand || match == matchHotkey || match == matchTrue {
-				l, err := r.replace(line, g.Hotkey)
+				l, err := r.replace(line, g.hotkey)
 				if err != nil {
 					return fmt.Errorf("error @ %q: %w", line, err)
 				}
-				g.Lines[i] = l
+				g.lines[i] = l
 				break
 			}
 		}
@@ -30,9 +30,9 @@ func (g *Group) Apply(rules []rule) error {
 	return nil
 }
 
-// Print outputs the group to the given writer
-func (g *Group) Print(w io.Writer) {
-	for _, line := range g.Lines {
+// print outputs the group to the given writer
+func (g *group) print(w io.Writer) {
+	for _, line := range g.lines {
 		fmt.Fprintln(w, line)
 	}
 }
