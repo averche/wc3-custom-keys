@@ -162,34 +162,33 @@ func (r *rule) extract(line string) string {
 	return r.regex.ReplaceAllString(line, "$2")
 }
 
-// replace returns a string modified according to the regex and the action
-func (r *rule) replace(line string, key string) string {
+// replace returns a string modified according to the rule
+func (r *rule) replace(line string, key string) (string, error) {
 	if key == "" {
-		return line
+		return line, nil
 	}
 
 	switch r.action {
-
 	case actionKeep:
-		return line
+		return line, nil
 
 	case actionCommand:
-		return line
+		return line, nil
 
 	case actionHotkey, actionHotkey2:
-		return fmt.Sprintf("%s%s", r.regex.ReplaceAllString(line, "$1"), key)
+		return fmt.Sprintf("%s%s", r.regex.ReplaceAllString(line, "$1"), key), nil
 
 	case actionReplaceOne:
-		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)"), key) + r.regex.ReplaceAllString(line, "$5")
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)"), key) + r.regex.ReplaceAllString(line, "$5"), nil
 
 	case actionReplaceTwo:
-		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)"), key, key)
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)"), key, key), nil
 
 	case actionReplaceThree:
-		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)$9$10$11$12 (|cffffcc00%s|r)$13$14"), key, key, key)
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)$9$10$11$12 (|cffffcc00%s|r)$13$14"), key, key, key), nil
 	}
 
-	return "<< ERROR >>"
+	return "", fmt.Errorf("unknown action %d", r.action)
 }
 
 // matches returns MatchTrue if the line matches the regex or a more specific match (MatchCommand/MatchHotkey)
