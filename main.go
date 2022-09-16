@@ -53,7 +53,9 @@ func generate(rules []rule, r io.Reader, w io.Writer) error {
 
 			case matchCommand:
 				current.Hotkey = currentHotkey
-				current.Apply(rules)
+				if err := current.Apply(rules); err != nil {
+					return fmt.Errorf("could not apply rules: %w", err)
+				}
 				current.Print(w)
 				current = Group{Lines: []string{line}}
 				currentHotkey = ""
@@ -83,7 +85,9 @@ func generate(rules []rule, r io.Reader, w io.Writer) error {
 	}
 
 	// the last group
-	current.Apply(rules)
+	if err := current.Apply(rules); err != nil {
+		return fmt.Errorf("could not apply rules: %w", err)
+	}
 	current.Print(w)
 
 	if err := scanner.Err(); err != nil {
