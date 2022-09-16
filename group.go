@@ -11,8 +11,8 @@ type Group struct {
 	Lines  []string
 }
 
-// Adjust will replace all lines with the group their regex equivalents
-func (g *Group) Apply(rules []Rule) {
+// Apply will apply the rules and replace all lines with the group their regex equivalents
+func (g *Group) Apply(rules []rule) {
 	for i, line := range g.Lines {
 		for _, r := range rules {
 			match := r.matches(line)

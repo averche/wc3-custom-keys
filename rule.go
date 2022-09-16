@@ -8,201 +8,201 @@ import (
 type action uint8
 
 const (
-	keep         action = 0
-	command      action = 1
-	hotkey       action = 2
-	hotkey2      action = 3
-	replaceOne   action = 4
-	replaceTwo   action = 5
-	replaceThree action = 6
+	actionKeep action = iota
+	actionCommand
+	actionHotkey
+	actionHotkey2
+	actionReplaceOne
+	actionReplaceTwo
+	actionReplaceThree
 )
 
 type match uint8
 
 const (
-	matchFalse   match = 0
-	matchTrue    match = 1
-	matchHotkey  match = 2
-	matchCommand match = 3
+	matchFalse match = iota
+	matchTrue
+	matchHotkey
+	matchCommand
 )
 
-// Rule encapusulates a regular expression and an associated action
-type Rule struct {
+// rule encapusulates a regular expression and an associated action
+type rule struct {
 	action action
 	regex  *regexp.Regexp
 }
 
-// generateExpressions returns a set of regular rules with correspodning actions
-func generateExpressions() []Rule {
-	var rules []Rule
+// rules returns a set of rules to apply to all lines
+func rules() []rule {
+	var rules []rule
 
-	rules = append(rules, Rule{ // command
-		action: command,
+	rules = append(rules, rule{ // command
+		action: actionCommand,
 		regex:  regexp.MustCompile(`^\[[\w]*\][ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Hotkey
-		action: hotkey,
+	rules = append(rules, rule{ // Hotkey
+		action: actionHotkey,
 		regex:  regexp.MustCompile(`^(?P<name>Hotkey=)(?P<hotkey>\w+)(,\w+){0,2}[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Researchhotkey
-		action: hotkey2,
+	rules = append(rules, rule{ // Researchhotkey
+		action: actionHotkey2,
 		regex:  regexp.MustCompile(`^(?P<name>Researchhotkey=)(?P<hotkey>\w+)(,\w+){0,2}[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Unhotkey
-		action: hotkey2,
+	rules = append(rules, rule{ // Unhotkey
+		action: actionHotkey2,
 		regex:  regexp.MustCompile(`^(?P<name>Unhotkey=)(?P<hotkey>\w+)(,\w+){0,2}[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // comment
-		action: keep,
+	rules = append(rules, rule{ // comment
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^\/\/.*$`),
 	})
-	rules = append(rules, Rule{ // empty
-		action: keep,
+	rules = append(rules, rule{ // empty
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Awakentip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Awakentip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Awakentip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
 	})
-	rules = append(rules, Rule{ // Awakentip=t(i)p
-		action: replaceOne,
+	rules = append(rules, rule{ // Awakentip=t(i)p
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Awakentip=tip
-		action: replaceOne,
+	rules = append(rules, rule{ // Awakentip=tip
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Researchtip=t(i)p [Level %d]
-		action: replaceOne,
+	rules = append(rules, rule{ // Researchtip=t(i)p [Level %d]
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level %d\|r\])"?[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Researchtip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Researchtip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Researchtip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
 	})
-	rules = append(rules, Rule{ // Researchtip=t(i)p
-		action: replaceOne,
+	rules = append(rules, rule{ // Researchtip=t(i)p
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Researchtip=tip
-		action: replaceOne,
+	rules = append(rules, rule{ // Researchtip=tip
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Revivetip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Revivetip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Revivetip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
 	})
-	rules = append(rules, Rule{ // Revivetip=t(i)p
-		action: replaceOne,
+	rules = append(rules, rule{ // Revivetip=t(i)p
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Revivetip=tip
-		action: replaceOne,
+	rules = append(rules, rule{ // Revivetip=tip
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Untip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Untip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Untip="?\|cffc3dbff[\w \-\!\.]{2,}\|r"?$`),
 	})
-	rules = append(rules, Rule{ // Untip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Untip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Untip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
 	})
-	rules = append(rules, Rule{ // Untip=t(i)p
-		action: replaceOne,
+	rules = append(rules, rule{ // Untip=t(i)p
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Untip=tip
-		action: replaceOne,
+	rules = append(rules, rule{ // Untip=tip
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
-		action: replaceThree,
+	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
+		action: actionReplaceThree,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
 			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
 			`(?P<p3>[\w \-\!\.]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.]*)(?P<l2> - \[\|cffffcc00Level 2\|r\],)` +
 			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3> - \[\|cffffcc00Level 3\|r\])"?[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
-		action: replaceThree,
+	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
+		action: actionReplaceThree,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
 			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1>,)` +
 			`(?P<p3>[\w \-\!\.]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.]*)(?P<l2>,)` +
 			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3>)"?$`),
 	})
-	rules = append(rules, Rule{ // Tip=t(i)p1,t(i)p2
-		action: replaceTwo,
+	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2
+		action: actionReplaceTwo,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
 			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
 			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3> - \[\|cffffcc00Level 2\|r\])"?[ \t]*$`),
 	})
-	rules = append(rules, Rule{ // Tip=t(i)p1,t(i)p2
-		action: replaceTwo,
+	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2
+		action: actionReplaceTwo,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
 			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1>,)` +
 			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3>)"?$`),
 	})
-	rules = append(rules, Rule{ // Tip=tip (E)
-		action: keep,
+	rules = append(rules, rule{ // Tip=tip (E)
+		action: actionKeep,
 		regex:  regexp.MustCompile(`^Tip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
 	})
-	rules = append(rules, Rule{ // Tip=t(i)p
-		action: replaceOne,
+	rules = append(rules, rule{ // Tip=t(i)p
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
 	})
-	rules = append(rules, Rule{ // Tip=tip
-		action: replaceOne,
+	rules = append(rules, rule{ // Tip=tip
+		action: actionReplaceOne,
 		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
 	})
 
 	return rules
 }
 
-func (e *Rule) extract(line string) string {
-	return e.regex.ReplaceAllString(line, "$2")
+func (r *rule) extract(line string) string {
+	return r.regex.ReplaceAllString(line, "$2")
 }
 
 // replace returns a string modified according to the regex and the action
-func (e *Rule) replace(line string, key string) string {
+func (r *rule) replace(line string, key string) string {
 	if key == "" {
 		return line
 	}
 
-	switch e.action {
+	switch r.action {
 
-	case keep:
+	case actionKeep:
 		return line
 
-	case command:
+	case actionCommand:
 		return line
 
-	case hotkey, hotkey2:
-		return fmt.Sprintf("%s%s", e.regex.ReplaceAllString(line, "$1"), key)
+	case actionHotkey, actionHotkey2:
+		return fmt.Sprintf("%s%s", r.regex.ReplaceAllString(line, "$1"), key)
 
-	case replaceOne:
-		return fmt.Sprintf(e.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)"), key) + e.regex.ReplaceAllString(line, "$5")
+	case actionReplaceOne:
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)"), key) + r.regex.ReplaceAllString(line, "$5")
 
-	case replaceTwo:
-		return fmt.Sprintf(e.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)"), key, key)
+	case actionReplaceTwo:
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)"), key, key)
 
-	case replaceThree:
-		return fmt.Sprintf(e.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)$9$10$11$12 (|cffffcc00%s|r)$13$14"), key, key, key)
+	case actionReplaceThree:
+		return fmt.Sprintf(r.regex.ReplaceAllString(line, "$1$2$3$4 (|cffffcc00%s|r)$5$6$7$8 (|cffffcc00%s|r)$9$10$11$12 (|cffffcc00%s|r)$13$14"), key, key, key)
 	}
 
 	return "<< ERROR >>"
 }
 
 // matches returns MatchTrue if the line matches the regex or a more specific match (MatchCommand/MatchHotkey)
-func (e *Rule) matches(line string) match {
-	if !e.regex.MatchString(line) {
+func (r *rule) matches(line string) match {
+	if !r.regex.MatchString(line) {
 		return matchFalse
 	}
 
-	switch e.action {
-	case command:
+	switch r.action {
+	case actionCommand:
 		return matchCommand
 
-	case hotkey, hotkey2:
+	case actionHotkey, actionHotkey2:
 		return matchHotkey
 	}
 

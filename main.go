@@ -6,17 +6,35 @@ import (
 	"io"
 	"log"
 	"os"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 func main() {
-	f, err := os.Open("CustomKeys.txt")
-	if err != nil {
+	if err := run("CustomKeys.txt"); err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
 }
 
-func generate(rules []Rule, r io.Reader, w io.Writer) error {
+func run(path string) (errs error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("could not open %q: %w", path, err)
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			errs = multierror.Append(errs, fmt.Errorf("could not close %q: %w", path, err))
+		}
+	}()
+
+	if err := generate(rules(), f, os.Stdout); err != nil {
+		return fmt.Errorf("generation error: %w", err)
+	}
+
+	return nil
+}
+
+func generate(rules []rule, r io.Reader, w io.Writer) error {
 	var (
 		current       Group
 		currentHotkey string
@@ -30,8 +48,8 @@ func generate(rules []Rule, r io.Reader, w io.Writer) error {
 		matched := false
 
 	innerloop:
-		for _, e := range rules {
-			switch e.matches(line) {
+		for _, r := range rules {
+			switch r.matches(line) {
 
 			case matchCommand:
 				current.Hotkey = currentHotkey
@@ -44,10 +62,10 @@ func generate(rules []Rule, r io.Reader, w io.Writer) error {
 
 			case matchHotkey:
 				current.Lines = append(current.Lines, line)
-				if e.action == hotkey2 && currentHotkey == "" {
-					currentHotkey = e.extract(line)
-				} else if e.action == hotkey {
-					currentHotkey = e.extract(line)
+				if r.action == actionHotkey2 && currentHotkey == "" {
+					currentHotkey = r.extract(line)
+				} else if r.action == actionHotkey {
+					currentHotkey = r.extract(line)
 				}
 				matched = true
 				break innerloop
@@ -64,6 +82,7 @@ func generate(rules []Rule, r io.Reader, w io.Writer) error {
 		}
 	}
 
+	// the last group
 	current.Apply(rules)
 	current.Print(w)
 
