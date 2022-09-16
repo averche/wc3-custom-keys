@@ -11,7 +11,18 @@ import (
 )
 
 func main() {
-	if err := run("CustomKeys.txt"); err != nil {
+	var customKeysPath string
+
+	switch len(os.Args) {
+	case 1:
+		customKeysPath = "CustomKeys.txt"
+	case 2:
+		customKeysPath = os.Args[1]
+	default:
+		log.Fatalf("Usage: %s <path/to/CustomKeys.txt>", os.Args[0])
+	}
+
+	if err := run(customKeysPath); err != nil {
 		log.Fatal(err)
 	}
 }
