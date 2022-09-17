@@ -1,10 +1,20 @@
 # WarCraft III CustomKeys.txt Generator
 
+## Prerequisites
+
+- [Go 1.18](https://go.dev/doc/install)
+
 ## How to generate CustomKeys.txt
 
-1. Modify `CustomKeys.txt`: change the `Hotkey=?` entries to desired hotkeys
-1. Run `go build && ./wc3-custom-keys CustomKeys.txt CustomKeysGen.txt`
-1. `CustomKeysGen.txt` will now have properly formatted hokeys, tooltips, etc.
+1. Change the `Hotkey=` entries to the desired hotkeys in
+   [`data/CustomKeysDefault.txt`](data/CustomKeysDefault.txt)
+1. Generate the keys:
+   ```shell-session
+   go run . data/CustomKeysDefault.txt data/CustomKeys.txt
+   ```
+1. Copy the generated [`data/CustomKeys.txt`](data/CustomKeys.txt) to the
+   location specified in the game
+   (`%UserProfile%\Documents\Warcraft III\CustomKeyBindings` on Windows)
 
 ## Usage
 
