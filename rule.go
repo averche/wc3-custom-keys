@@ -60,99 +60,75 @@ func rules() []rule {
 		action: actionKeep,
 		regex:  regexp.MustCompile(`^[ \t]*$`),
 	})
-	rules = append(rules, rule{ // Awakentip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Awakentip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
-	})
 	rules = append(rules, rule{ // Awakentip=t(i)p
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Awakentip=tip
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Awakentip=)"?(?P<p1>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Researchtip=t(i)p [Level %d]
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level %d\|r\])"?[ \t]*$`),
-	})
-	rules = append(rules, rule{ // Researchtip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Researchtip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
+		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)(?P<l1> - \[\|cffffcc00Level %d\|r\])"?[ \t]*$`),
 	})
 	rules = append(rules, rule{ // Researchtip=t(i)p
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Researchtip=tip
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
-	})
-	rules = append(rules, rule{ // Revivetip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Revivetip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
+		regex:  regexp.MustCompile(`^(?P<name>Researchtip=)"?(?P<p1>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Revivetip=t(i)p
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Revivetip=tip
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
-	})
-	rules = append(rules, rule{ // Untip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Untip="?\|cffc3dbff[\w \-\!\.]{2,}\|r"?$`),
-	})
-	rules = append(rules, rule{ // Untip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Untip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
+		regex:  regexp.MustCompile(`^(?P<name>Revivetip=)"?(?P<p1>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Untip=t(i)p
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Untip=tip
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Untip=)"?(?P<p1>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
 		action: actionReplaceThree,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
-			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
-			`(?P<p3>[\w \-\!\.]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.]*)(?P<l2> - \[\|cffffcc00Level 2\|r\],)` +
-			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3> - \[\|cffffcc00Level 3\|r\])"?[ \t]*$`),
+			`(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
+			`(?P<p3>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.\(\)]*)(?P<l2> - \[\|cffffcc00Level 2\|r\],)` +
+			`(?P<p5>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.\(\)]*)(?P<l3> - \[\|cffffcc00Level 3\|r\])"?[ \t]*$`),
 	})
 	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2,t(i)p3
 		action: actionReplaceThree,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
-			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1>,)` +
-			`(?P<p3>[\w \-\!\.]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.]*)(?P<l2>,)` +
-			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3>)"?$`),
+			`(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)(?P<l1>,)` +
+			`(?P<p3>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key2>\w)\|r(?P<p4>[\w \-\!\.\(\)]*)(?P<l2>,)` +
+			`(?P<p5>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.\(\)]*)(?P<l3>)"?$`),
 	})
 	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2
 		action: actionReplaceTwo,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
-			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
-			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3> - \[\|cffffcc00Level 2\|r\])"?[ \t]*$`),
+			`(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)(?P<l1> - \[\|cffffcc00Level 1\|r\],)` +
+			`(?P<p5>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.\(\)]*)(?P<l3> - \[\|cffffcc00Level 2\|r\])"?[ \t]*$`),
 	})
 	rules = append(rules, rule{ // Tip=t(i)p1,t(i)p2
 		action: actionReplaceTwo,
 		regex: regexp.MustCompile(`^(?P<name>Tip=)"?` +
-			`(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.]*)(?P<l1>,)` +
-			`(?P<p5>[\w \-\!\.]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.]*)(?P<l3>)"?$`),
-	})
-	rules = append(rules, rule{ // Tip=tip (E)
-		action: actionKeep,
-		regex:  regexp.MustCompile(`^Tip=[\w \-\!\.]* \(\|cffffcc00\w+\|r\)[\w \-\!\.]*$`),
+			`(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key1>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)(?P<l1>,)` +
+			`(?P<p5>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key3>\w)\|r(?P<p6>[\w \-\!\.\(\)]*)(?P<l3>)"?$`),
 	})
 	rules = append(rules, rule{ // Tip=t(i)p
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.\(\)]*)\|cffffcc00(?P<key>\w)\|r(?P<p2>[\w \-\!\.\(\)]*)"?$`),
 	})
 	rules = append(rules, rule{ // Tip=tip
 		action: actionReplaceOne,
-		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.]*)"?$`),
+		regex:  regexp.MustCompile(`^(?P<name>Tip=)"?(?P<p1>[\w \-\!\.\(\)]*)"?$`),
 	})
 
 	return rules
